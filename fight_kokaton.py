@@ -173,9 +173,7 @@ class Explosion:
         if self.timelimit >0:
             screen.blit(self.imgs, self.rct)
             
-
-
-
+            
 def main():
     pg.display.set_caption("たたかえ！こうかとん")
     screen = pg.display.set_mode((WIDTH, HEIGHT))    
