@@ -140,6 +140,8 @@ class Bomb:
         screen.blit(self.img, self.rct)
 
 
+
+
 def main():
     pg.display.set_caption("たたかえ！こうかとん")
     screen = pg.display.set_mode((WIDTH, HEIGHT))    
@@ -171,6 +173,8 @@ def main():
                 if beam.rct.colliderect(bomb.rct): #beamがbombに当たったら
                     bomb = None 
                     beam = None
+                    bird.change_img(6, screen) #birdクラスのchange_imgメソッドの引数の形に合わせる
+                    pg.display.update()
 
         key_lst = pg.key.get_pressed()
         bird.update(key_lst, screen)
