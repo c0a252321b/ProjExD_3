@@ -156,7 +156,23 @@ class Score:
         self.img = self.fonto.render(f"Score:{self.score}", 0, (0, 0, 255))
         screen.blit(self.img, self.rct) #bulitするもの, 位置
 
-
+class Explosion:
+    """
+    爆発エフェクト
+    """
+    def __init__(self, bomb:"Bomb"):
+        bb_img = pg.image.load("fig/explosion.gif")    
+        bb_img_flip = pg.transform.flip(pg.image.load(bb_img, True, True))
+        self.imgs = [bb_img, bb_img_flip]
+        self.rct = bb_img.get_rect()
+        self.rct.center = bomb.rct.center
+        self.timelimit = 20
+        
+    def update(self, screen:pg.Surface):
+        self.timelimit -= 1
+        if self.timelimit >0:
+            screen.blit(self.imgs, self.rct)
+            
 
 
 
@@ -174,6 +190,7 @@ def main():
 
     score_count = Score()
     multi_beam = []
+    explosion = []
 
     while True:
         for event in pg.event.get():
@@ -208,6 +225,8 @@ def main():
                         multi_beam[j] = None
                         bombs[i] = None  
                         score_count.score += 1 #当てた爆弾の数を加算
+
+                        break
 
         for j, beam in enumerate(multi_beam):
             if beam is not None and beam.rct.left > WIDTH:
