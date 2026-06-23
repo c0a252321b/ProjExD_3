@@ -140,6 +140,23 @@ class Bomb:
         self.rct.move_ip(self.vx, self.vy)
         screen.blit(self.img, self.rct)
 
+class Score:
+    """
+    当てた爆弾の数カウント
+    """
+    def __init__(self ):
+        self.fonto = pg.font.Font(None, 50)
+        self.color = (0, 0, 255)
+        self.score = 0
+        self.img = self.fonto.render(f"Score:{self.score}", 0, (0, 0, 255))
+        self.rct = self.img.get_rect()
+        self.rct.center = (100, HEIGHT-50)
+
+    def update(self, screen:pg.Surface): #screenにblitするから必要
+        self.img = self.fonto.render(f"Score:{self.score}", 0, (0, 0, 255))
+        screen.blit(self.img, self.rct) #bulitするもの, 位置
+
+
 
 
 
@@ -154,6 +171,8 @@ def main():
     tmr = 0
 
     bombs = [Bomb((255, 0, 0), 10) for _ in range(NUM_OF_BOMBS) ]#５この爆弾リスト
+
+    score_count = Score()
 
     while True:
         for event in pg.event.get():
@@ -183,7 +202,8 @@ def main():
                     bird.change_img(6, screen) #birdクラスのchange_imgメソッドの引数の形に合わせる
                     pg.display.update()
                     beam = None
-                    bombs[i] = None    
+                    bombs[i] = None  
+                    score_count.score += 1 #当てた爆弾の数を加算
         bombs = [bomb for bomb in bombs if bomb is not None] #Noneでない要素のみで新しくリストを作る
 
         key_lst = pg.key.get_pressed()
@@ -193,6 +213,8 @@ def main():
         # if bomb is not None: ⇐for文に変更
         for bomb in bombs:
             bomb.update(screen)
+
+        score_count.update(screen)
         pg.display.update()
         tmr += 1
         clock.tick(50)
