@@ -173,6 +173,7 @@ def main():
     bombs = [Bomb((255, 0, 0), 10) for _ in range(NUM_OF_BOMBS) ]#５この爆弾リスト
 
     score_count = Score()
+    multi_beam = []
 
     while True:
         for event in pg.event.get():
@@ -180,7 +181,8 @@ def main():
                 return
             if event.type == pg.KEYDOWN and event.key == pg.K_SPACE:
                 # スペースキー押下でBeamクラスのインスタンス生成
-                beam = Beam(bird) #Beamクラスのイニシャライザでbirdが引数に指定されてる            
+                beam = Beam(bird) #Beamクラスのイニシャライザでbirdが引数に指定されてる 
+                multi_beam.append(beam)           
         screen.blit(bg_img, [0, 0])
         
         # if bomb is not None: ⇐for文に変更
@@ -196,19 +198,26 @@ def main():
                 return
         
         # if bomb is not None: ⇐for文に変更
-        for i, bomb in enumerate(bombs):
-            if beam is not None: #Noneでは判定ができない
-                if beam.rct.colliderect(bomb.rct): #beamがbombに当たったら
-                    bird.change_img(6, screen) #birdクラスのchange_imgメソッドの引数の形に合わせる
-                    pg.display.update()
-                    beam = None
-                    bombs[i] = None  
-                    score_count.score += 1 #当てた爆弾の数を加算
-        bombs = [bomb for bomb in bombs if bomb is not None] #Noneでない要素のみで新しくリストを作る
 
+        for i, bomb in enumerate(bombs):
+            for j, beam in enumerate(multi_beam):
+                if beam is not None and bomb is not None: #Noneでは判定ができない
+                    if beam.rct.colliderect(bomb.rct): #beamがbombに当たったら
+                        bird.change_img(6, screen) #birdクラスのchange_imgメソッドの引数の形に合わせる
+                        pg.display.update()
+                        multi_beam[j] = None
+                        bombs[i] = None  
+                        score_count.score += 1 #当てた爆弾の数を加算
+
+        for j, beam in enumerate(multi_beam):
+            if beam is not None and beam.rct.left > WIDTH:
+                multi_beam[j] = None
+
+        bombs = [bomb for bomb in bombs if bomb is not None] #Noneでない要素のみで新しくリストを作る
+        multi_beam = [beam for beam in multi_beam if beam is not None]
         key_lst = pg.key.get_pressed()
         bird.update(key_lst, screen)
-        if beam is not None: #beamが出現していたら
+        for beam in multi_beam: #beamが出現していたら
             beam.update(screen) #Beamクラスのupdateメソッドではscreenにblitしているからしているから   
         # if bomb is not None: ⇐for文に変更
         for bomb in bombs:
